@@ -10,12 +10,14 @@ namespace BankA.API.Controllers
     public class BankAController : ControllerBase
     {
         [HttpGet("{customerId}")]
+        [Authorize(Policy = "ReadBankA")]
         public decimal Balance(int customerId)
         {
             return 1000;
         }
 
         [HttpGet("{customerId}")]
+        [Authorize(Policy = "ReadBankA")]
         public List<string> GetAccountsById(int customerId) 
         {
             return new List<string>
@@ -23,6 +25,15 @@ namespace BankA.API.Controllers
                 "13258976",
                 "16899456"
             };
+        }
+
+        [HttpGet("{customerId}/{amount}")]
+        [Authorize(Policy = "WriteBankA")]
+        public bool Invest(int customerId, decimal amount)
+        {
+            // Do invest
+
+            return true;
         }
     }
 }

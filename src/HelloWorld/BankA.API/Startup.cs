@@ -28,8 +28,14 @@ namespace BankA.API
                     options.Authority = Configuration["AuthServer"];
 
                     //This API associate with the resource called "BankA" on Auth Server.
-                    options.Audience  = "BankA";
+                    options.Audience = "BankA";
                 });
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("ReadBankA" , policy => policy.RequireClaim("scope", "BankA.Read"));
+                options.AddPolicy("WriteBankA", policy => policy.RequireClaim("scope", "BankA.Write"));
+            });
 
             services.AddControllers();
             services.AddSwaggerGen(c =>

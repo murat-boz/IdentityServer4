@@ -34,9 +34,15 @@ namespace BankB.API
                     // The address of Auth Server that publishing the token is notified
                     options.Authority = Configuration["AuthServer"];
 
-                    //This API associate with the resource called "BankA" on Auth Server.
-                    options.Audience = "BankA";
+                    //This API associate with the resource called "BankB" on Auth Server.
+                    options.Audience = "BankB";
                 });
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("ReadBankB" , policy => policy.RequireClaim("scope", "BankB.Read"));
+                options.AddPolicy("WriteBankB", policy => policy.RequireClaim("scope", "BankB.Write"));
+            });
 
             services.AddControllers();
             services.AddSwaggerGen(c =>

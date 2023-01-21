@@ -32,8 +32,8 @@ namespace AuthServer
                 {
                     Scopes =
                     {
-                        "BankA.Write",
-                        "BankA.Read"
+                        "BankB.Write",
+                        "BankB.Read"
                     }
                 }
             };
