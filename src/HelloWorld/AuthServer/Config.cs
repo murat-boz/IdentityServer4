@@ -44,22 +44,22 @@ namespace AuthServer
         public static IEnumerable<Client> Clients =>
             new List<Client>
             {
-                new Client
-                {
-                    ClientId          = "BankA",
-                    ClientName        = "BankA",
-                    ClientSecrets     = { new Secret("banka".Sha256()) },
-                    AllowedGrantTypes = GrantTypes.ClientCredentials,
-                    AllowedScopes     = { "BankA.Write", "BankA.Read" }
-                },
-                new Client
-                {
-                    ClientId          = "BankB",
-                    ClientName        = "BankB",
-                    ClientSecrets     = { new Secret("bankb".Sha256()) },
-                    AllowedGrantTypes = GrantTypes.ClientCredentials,
-                    AllowedScopes     = { "BankB.Write", "BankB.Read" }
-                },
+                //new Client
+                //{
+                //    ClientId          = "BankA",
+                //    ClientName        = "BankA",
+                //    ClientSecrets     = { new Secret("banka".Sha256()) },
+                //    AllowedGrantTypes = GrantTypes.ClientCredentials,
+                //    AllowedScopes     = { "BankA.Write", "BankA.Read" }
+                //},
+                //new Client
+                //{
+                //    ClientId          = "BankB",
+                //    ClientName        = "BankB",
+                //    ClientSecrets     = { new Secret("bankb".Sha256()) },
+                //    AllowedGrantTypes = GrantTypes.ClientCredentials,
+                //    AllowedScopes     = { "BankB.Write", "BankB.Read" }
+                //},
                 new Client
                 {
                     ClientId          = "BankManager",
@@ -69,7 +69,11 @@ namespace AuthServer
                     AllowedScopes     = 
                     { 
                         IdentityServerConstants.StandardScopes.OpenId, 
-                        IdentityServerConstants.StandardScopes.Profile
+                        IdentityServerConstants.StandardScopes.Profile,
+                        "BankA.Write", 
+                        "BankA.Read",
+                        "BankB.Write",
+                        "BankB.Read"
                     },
                     RedirectUris      = new List<string> { "https://localhost:4000/signin-oidc" },
                     RequirePkce       = false,

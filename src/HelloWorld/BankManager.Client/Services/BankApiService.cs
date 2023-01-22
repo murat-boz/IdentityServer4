@@ -11,49 +11,26 @@ namespace BankManager.Client.Services
     public class BankApiService : IBankApiService
     {
         private readonly IConfiguration configuration;
+        private readonly IHttpClientFactory httpClientFactory;
 
-        public BankApiService(IConfiguration configuration)
+        public BankApiService(IConfiguration configuration, IHttpClientFactory httpClientFactory)
         {
-            this.configuration = configuration;
+            this.configuration     = configuration;
+            this.httpClientFactory = httpClientFactory;
         }
 
         public async Task<decimal> GetBalanceAsync(string httpClientName, string clientSecret, string endpoint)
         {
-            var client = await this.CreateClientRequest(httpClientName, clientSecret);
+            var content = await this.CreateClientRequest(httpClientName, endpoint);
 
-            HttpResponseMessage response = await client.GetAsync(endpoint);
-
-            decimal balance = 0;
-
-            if (response.IsSuccessStatusCode)
-            {
-                balance = JsonConvert.DeserializeObject<decimal>(await response.Content.ReadAsStringAsync());
-
-                Console.WriteLine($"Your Balance : {balance}");
-            }
-
-            return balance;
+            return JsonConvert.DeserializeObject<decimal>(content);
         }
 
         public async Task<List<string>> GetAccountsByIdAsync(string httpClientName, string clientSecret, string endpoint)
         {
-            var client = await this.CreateClientRequest(httpClientName, clientSecret);
+            var content = await this.CreateClientRequest(httpClientName, endpoint);
 
-            HttpResponseMessage response = await client.GetAsync(endpoint);
-
-            List<string> accounts = null;
-
-            if (response.IsSuccessStatusCode)
-            {
-                accounts = JsonConvert.DeserializeObject<List<string>>(await response.Content.ReadAsStringAsync());
-
-                foreach (var account in accounts)
-                {
-                    Console.WriteLine($"Account Number: {account}");
-                }
-            }
-
-            return accounts;
+            return JsonConvert.DeserializeObject<List<string>>(content);
         }
 
         public Task<bool> InvestAsync(string httpClientName, string clientSecret, string endpoint)
@@ -61,22 +38,37 @@ namespace BankManager.Client.Services
             throw new NotImplementedException();
         }
 
-        private async Task<HttpClient> CreateClientRequest(string httpClientName, string clientSecret)
+        private async Task<string> CreateClientRequest(string httpClientName, string endpoint)
         {
-            HttpClient httpClient = new HttpClient();
+            var client = this.httpClientFactory.CreateClient(httpClientName);
 
-            DiscoveryDocumentResponse discovery = await httpClient.GetDiscoveryDocumentAsync(this.configuration["AuthServerSettings"]);
+            var request = new HttpRequestMessage(HttpMethod.Get, endpoint);
 
-            ClientCredentialsTokenRequest tokenRequest = new ClientCredentialsTokenRequest();
+            var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
 
-            tokenRequest.ClientId     = httpClientName;
-            tokenRequest.ClientSecret = clientSecret;
-            tokenRequest.Address      = discovery.TokenEndpoint;
+            response.EnsureSuccessStatusCode();
 
-            TokenResponse tokenResponse = await httpClient.RequestClientCredentialsTokenAsync(tokenRequest);
-            httpClient.SetBearerToken(tokenResponse.AccessToken);
+            var content = await response.Content.ReadAsStringAsync();
 
-            return httpClient;
+            return content;
         }
+
+        //private async Task<HttpClient> CreateClientRequest(string httpClientName, string clientSecret)
+        //{
+        //    HttpClient httpClient = new HttpClient();
+
+        //    DiscoveryDocumentResponse discovery = await httpClient.GetDiscoveryDocumentAsync(this.configuration["AuthServerSettings"]);
+
+        //    ClientCredentialsTokenRequest tokenRequest = new ClientCredentialsTokenRequest();
+
+        //    tokenRequest.ClientId     = httpClientName;
+        //    tokenRequest.ClientSecret = clientSecret;
+        //    tokenRequest.Address      = discovery.TokenEndpoint;
+
+        //    TokenResponse tokenResponse = await httpClient.RequestClientCredentialsTokenAsync(tokenRequest);
+        //    httpClient.SetBearerToken(tokenResponse.AccessToken);
+
+        //    return httpClient;
+        //}
     }
 }

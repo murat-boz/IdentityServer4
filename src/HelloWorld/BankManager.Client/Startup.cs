@@ -1,3 +1,4 @@
+using BankManager.Client.HttpHandlers;
 using BankManager.Client.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
@@ -6,6 +7,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Net.Http.Headers;
+using System;
 
 namespace BankManager.Client
 {
@@ -24,6 +27,7 @@ namespace BankManager.Client
             services.AddControllersWithViews();
 
             services.AddScoped<IBankApiService, BankApiService>();
+            services.AddTransient<AuthenticationDelegatingHandler>();
 
             services.AddAuthentication(configure =>
                     {
@@ -33,12 +37,37 @@ namespace BankManager.Client
                     .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme)
                     .AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, configure =>
                     {
-                        configure.Authority    = "https://localhost:1000";
-                        configure.ClientId     = "BankManager";
-                        configure.ClientSecret = "bankmanager";
-                        configure.ResponseType = "code id_token";
-                        //configure.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                        configure.Authority                     = "https://localhost:1000";
+                        configure.ClientId                      = "BankManager";
+                        configure.ClientSecret                  = "bankmanager";
+                        configure.ResponseType                  = "code id_token";
+                        configure.GetClaimsFromUserInfoEndpoint = true;
+                        configure.SaveTokens                    = true;
+                        //configure.SignInScheme                = CookieAuthenticationDefaults.AuthenticationScheme;
+
+                        configure.Scope.Add("BankA.Write");
+                        configure.Scope.Add("BankA.Read");
+                        configure.Scope.Add("BankB.Write");
+                        configure.Scope.Add("BankB.Read");
                     });
+
+            services.AddHttpClient("BankA", configure =>
+            {
+                configure.BaseAddress = new Uri(Configuration.GetSection("BankSettings:BaseAdresses").Get<string[][]>()[0][0]);
+                configure.DefaultRequestHeaders.Clear();
+                configure.DefaultRequestHeaders.Add(HeaderNames.Accept, "application/json");
+            })
+            .AddHttpMessageHandler<AuthenticationDelegatingHandler>();
+
+            services.AddHttpClient("BankB", configure =>
+            {
+                configure.BaseAddress = new Uri(Configuration.GetSection("BankSettings:BaseAdresses").Get<string[][]>()[1][0]);
+                configure.DefaultRequestHeaders.Clear();
+                configure.DefaultRequestHeaders.Add(HeaderNames.Accept, "application/json");
+            })
+                    .AddHttpMessageHandler<AuthenticationDelegatingHandler>();
+
+            services.AddHttpContextAccessor();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
