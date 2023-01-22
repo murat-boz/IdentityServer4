@@ -1,13 +1,16 @@
-﻿using IdentityServer4.Models;
+﻿using IdentityServer4;
+using IdentityServer4.Models;
+using IdentityServer4.Test;
 using System.Collections.Generic;
 using System.Runtime.Intrinsics.X86;
+using System.Security.Claims;
 
 namespace AuthServer
 {
     public static class Config
     {
         //The permissions that will use on the APIs are defined.
-        public static IEnumerable<ApiScope> GetApiScopes =>
+        public static IEnumerable<ApiScope> ApiScopes =>
             new List<ApiScope> 
             { 
                 new ApiScope("BankA.Write", "BankA write permission"),
@@ -17,7 +20,7 @@ namespace AuthServer
             };
 
         // The clients that will use the APIs are defined.
-        public static IEnumerable<ApiResource> GetApiResources =>
+        public static IEnumerable<ApiResource> ApiResources =>
             new List<ApiResource>
             {
                 new ApiResource("BankA")
@@ -38,7 +41,7 @@ namespace AuthServer
                 }
             };
 
-        public static IEnumerable<Client> GetClients =>
+        public static IEnumerable<Client> Clients =>
             new List<Client>
             {
                 new Client
@@ -56,6 +59,42 @@ namespace AuthServer
                     ClientSecrets     = { new Secret("bankb".Sha256()) },
                     AllowedGrantTypes = GrantTypes.ClientCredentials,
                     AllowedScopes     = { "BankB.Write", "BankB.Read" }
+                },
+                new Client
+                {
+                    ClientId          = "BankManager",
+                    ClientName        = "BankManager",
+                    ClientSecrets     = { new Secret("bankmanager".Sha256()) },
+                    AllowedGrantTypes = GrantTypes.Hybrid,
+                    AllowedScopes     = 
+                    { 
+                        IdentityServerConstants.StandardScopes.OpenId, 
+                        IdentityServerConstants.StandardScopes.Profile
+                    },
+                    RedirectUris      = new List<string> { "https://localhost:4000/signin-oidc" },
+                    RequirePkce       = false,
+                }
+            };
+
+        public static IEnumerable<IdentityResource> IdentityResources =>
+            new List<IdentityResource>
+            {
+                new IdentityResources.OpenId(),
+                new IdentityResources.Profile()
+            };
+
+        public static List<TestUser> TestUsers =>
+            new List<TestUser>
+            {
+                new TestUser
+                {
+                    SubjectId = "murat",
+                    Username  = "murat",
+                    Password  = "m1",
+                    Claims    = {
+                        new Claim("name"   , "murat"),
+                        new Claim("website", "https://wwww.example.com")
+                    }
                 }
             };
     }

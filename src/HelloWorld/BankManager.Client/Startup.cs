@@ -1,12 +1,11 @@
-using BankManager.Client.HttpHandlers;
 using BankManager.Client.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Net.Http.Headers;
-using System;
 
 namespace BankManager.Client
 {
@@ -25,6 +24,21 @@ namespace BankManager.Client
             services.AddControllersWithViews();
 
             services.AddScoped<IBankApiService, BankApiService>();
+
+            services.AddAuthentication(configure =>
+                    {
+                        configure.DefaultScheme          = CookieAuthenticationDefaults.AuthenticationScheme;
+                        configure.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+                    })
+                    .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme)
+                    .AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, configure =>
+                    {
+                        configure.Authority    = "https://localhost:1000";
+                        configure.ClientId     = "BankManager";
+                        configure.ClientSecret = "bankmanager";
+                        configure.ResponseType = "code id_token";
+                        //configure.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                    });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -45,6 +59,7 @@ namespace BankManager.Client
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
