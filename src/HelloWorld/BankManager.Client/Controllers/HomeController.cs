@@ -1,5 +1,8 @@
 ﻿using BankManager.Client.Models;
 using BankManager.Client.Services;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
@@ -44,6 +47,12 @@ namespace BankManager.Client.Controllers
             ViewBag.Balance = balance;
 
             return View();
+        }
+
+        public async Task Logout()
+        {
+            await base.HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            await base.HttpContext.SignOutAsync(OpenIdConnectDefaults.AuthenticationScheme);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

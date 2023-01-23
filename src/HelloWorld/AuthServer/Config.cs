@@ -75,8 +75,9 @@ namespace AuthServer
                         "BankB.Write",
                         "BankB.Read"
                     },
-                    RedirectUris      = new List<string> { "https://localhost:4000/signin-oidc" },
-                    RequirePkce       = false,
+                    RedirectUris           = { "https://localhost:4000/signin-oidc" },
+                    PostLogoutRedirectUris = { "https://localhost:4000/signout-callback-oidc" },
+                    RequirePkce            = false,
                 }
             };
 
