@@ -7,21 +7,21 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "AuthServer": {
+    "ApiGateway": {
       "commandName": "Project",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "dotnetRunMessages": "true",
-      "applicationUrl": "https://localhost:1000;http://localhost:1001"
+      "applicationUrl": "https://localhost:5000;http://localhost:5001"
     }
   },
   "iisSettings": {
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:9506",
-      "sslPort": 44368
+      "applicationUrl": "http://localhost:57466",
+      "sslPort": 44331
     }
   }
 }

@@ -52,20 +52,27 @@ namespace BankManager.Client
                     });
 
             services.AddHttpClient("BankA", configure =>
-            {
-                configure.BaseAddress = new Uri(Configuration.GetSection("BankSettings:BaseAdresses").Get<string[][]>()[0][0]);
-                configure.DefaultRequestHeaders.Clear();
-                configure.DefaultRequestHeaders.Add(HeaderNames.Accept, "application/json");
-            })
-            .AddHttpMessageHandler<AuthenticationDelegatingHandler>();
+                    {
+                        configure.BaseAddress = new Uri(Configuration.GetSection("BankSettings:BaseAdresses").Get<string[][]>()[0][0]);
+                        configure.DefaultRequestHeaders.Clear();
+                        configure.DefaultRequestHeaders.Add(HeaderNames.Accept, "application/json");
+                    })
+                    .AddHttpMessageHandler<AuthenticationDelegatingHandler>();
 
             services.AddHttpClient("BankB", configure =>
-            {
-                configure.BaseAddress = new Uri(Configuration.GetSection("BankSettings:BaseAdresses").Get<string[][]>()[1][0]);
-                configure.DefaultRequestHeaders.Clear();
-                configure.DefaultRequestHeaders.Add(HeaderNames.Accept, "application/json");
-            })
+                    {
+                        configure.BaseAddress = new Uri(Configuration.GetSection("BankSettings:BaseAdresses").Get<string[][]>()[1][0]);
+                        configure.DefaultRequestHeaders.Clear();
+                        configure.DefaultRequestHeaders.Add(HeaderNames.Accept, "application/json");
+                    })
                     .AddHttpMessageHandler<AuthenticationDelegatingHandler>();
+
+            services.AddHttpClient("BankManager", configure =>
+                    {
+                        configure.BaseAddress = new Uri(Configuration["ApiGatewaySettings"]);
+                        configure.DefaultRequestHeaders.Clear();
+                        configure.DefaultRequestHeaders.Add(HeaderNames.Accept, "application/json");
+                    }).AddHttpMessageHandler<AuthenticationDelegatingHandler>();
 
             services.AddHttpContextAccessor();
         }

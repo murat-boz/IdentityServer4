@@ -33,7 +33,7 @@ namespace BankManager.Client.Controllers
 
         public async Task<IActionResult> BankA()
         {
-            var balance = await this.bankApiService.GetBalanceAsync("BankA", "banka", "https://localhost:2000/api/v1/BankA/Balance/1");
+            var balance = await this.bankApiService.GetBalanceAsync("BankManager", "banka", "https://localhost:5000/BankA/Balance/1"); //"https://localhost:2000/api/v1/BankA/Balance/1");
 
             ViewBag.Balance = balance;
 
@@ -42,7 +42,7 @@ namespace BankManager.Client.Controllers
 
         public async Task<IActionResult> BankB()
         {
-            var balance = await this.bankApiService.GetBalanceAsync("BankB", "bankb", "https://localhost:3000/api/v1/BankB/Balance/1");
+            var balance = await this.bankApiService.GetBalanceAsync("BankManager", "bankb", "https://localhost:5000/BankB/Balance/1"); //"https://localhost:3000/api/v1/BankB/Balance/1");
 
             ViewBag.Balance = balance;
 
